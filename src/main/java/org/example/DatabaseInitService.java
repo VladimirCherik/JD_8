@@ -4,7 +4,7 @@ import org.flywaydb.core.Flyway;
 
 
 public class DatabaseInitService {
-    public static void main(String[] args){
+    public void initAndPopulateDB(){
 
         Flyway flyway = Flyway
                 .configure()

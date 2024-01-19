@@ -13,31 +13,28 @@ public class ClientService {
         this.conn = conn;
     }
 
-    long create(String name)  {
+    public long create(String name)  {
 
         if (name.length() < 2 || name.length() > 1000) {
             throw new IllegalArgumentException("The name is not valid");
         }
         long result = 0;
         try {
-            createSt = conn.prepareStatement("INSERT INTO client (name) VALUES (?)");
+            createSt = conn.prepareStatement("INSERT INTO client (name) VALUES (?)",
+                    PreparedStatement.RETURN_GENERATED_KEYS);
             createSt.setString(1, name);
             createSt.executeUpdate();
 
-            readSt = conn.prepareStatement("SELECT id FROM client WHERE name = ?");
-            readSt.setString(1, name);
-            ResultSet resultSet = readSt.executeQuery();
-            List<Integer> arrayID = new ArrayList<>();
-            while (resultSet.next()){
-                arrayID.add(resultSet.getInt("id"));
-            }
-            result = arrayID.get(arrayID.size()-1);
+            ResultSet generatedKeys = createSt.getGeneratedKeys();
+            generatedKeys.next();
+            result = generatedKeys.getInt("id");
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return result;
     }
-    String getById(long id)  {
+    public String getById(long id)  {
 
         if(id < 1 || id > getMaxClientID() ){
             throw new IllegalArgumentException("The ID is not valid");
@@ -57,7 +54,7 @@ public class ClientService {
         }
         return result;
     }
-    void setName(long id, String name) {
+    public void setName(long id, String name) {
 
         if (id < 1 || id > getMaxClientID() || name.length() < 2 || name.length() > 1000 ){
             throw new IllegalArgumentException("The ID or Name is not valid");
@@ -72,7 +69,7 @@ public class ClientService {
         }
 
     }
-    void deleteById(long id) {
+    public void deleteById(long id) {
 
         if(id < 1 || id > getMaxClientID() ){
             throw new IllegalArgumentException("The ID is not valid");
@@ -85,7 +82,7 @@ public class ClientService {
             throw new RuntimeException(e);
         }
     }
-    List<Client> listAll() {
+    public List<Client> listAll() {
         List<Client> clients = new ArrayList<>();
         try {
             readSt = conn.prepareStatement("SELECT * FROM client");
@@ -103,7 +100,7 @@ public class ClientService {
         }
         return clients;
     }
-    int getMaxClientID (){
+    public int getMaxClientID (){
         int maxID = 0;
 
         try {

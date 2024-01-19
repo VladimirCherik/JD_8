@@ -1,10 +1,11 @@
 package org.example;
 
-import java.sql.SQLException;
 import java.util.List;
 
 public class Main {
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) {
+
+        new DatabaseInitService().initAndPopulateDB();
 
         ClientService clientService = new ClientService(Database.getInstance().getConnection());
 
@@ -20,7 +21,7 @@ public class Main {
         //delete client
         clientService.deleteById(5);
 
-        // ger all clients
+        // get all clients
         List<Client> clients = clientService.listAll();
         for (Client client: clients) {
             System.out.println("client = " + client);
